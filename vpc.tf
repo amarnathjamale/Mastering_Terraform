@@ -5,10 +5,24 @@ data "aws_ami" "find_ami" {
     values = ["al2023-ami-2023.5.20240819.0-kernel-6.1-x86_64"]
   }
 }
+variable "file_name" {
+  description = "Name of the key pair"
+  type        = string
+}
+# RSA key of size 4096 bits
+resource "tls_private_key" "rsa-4096-example" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "tf_key" {
+  content  = tls_private_key.rsa.private_key_pem
+  filename = var.file_name
+}
 
 resource "aws_key_pair" "deployer" {
   key_name   = "not-a-sshkey"
-  public_key = file("${path.module}/id_rsa.pub")
+  public_key = tls_private_key.rsa.public_key_openssh
 }
 
 #Create VPC - 10.69.0.0/16
@@ -105,7 +119,7 @@ resource "aws_instance" "not-a-vm" {
     ]
     connection {
       host        = self.public_ip
-      private_key = file("./id_rsa")
+      private_key = file(var.file_name)
       type        = "ssh"
       user        = "ec2-user"
     }
