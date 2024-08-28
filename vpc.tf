@@ -11,7 +11,7 @@ variable "file_name" {
   default     = "id_rsa"
 }
 # RSA key of size 4096 bits
-resource "tls_private_key" "rsa-4096-example" {
+resource "tls_private_key" "rsa" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
