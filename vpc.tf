@@ -8,6 +8,7 @@ data "aws_ami" "find_ami" {
 variable "file_name" {
   description = "Name of the key pair"
   type        = string
+  default     = "id_rsa"
 }
 # RSA key of size 4096 bits
 resource "tls_private_key" "rsa-4096-example" {
